@@ -1,0 +1,37 @@
+{
+  "name": "opncreator",
+  "displayName": "OpnCreator",
+  "description": "Quickly add operation classes to the DCAD codebase",
+  "version": "1.0.4",
+  "publisher": "giahuy",
+  "engines": {
+    "vscode": "^1.74.0"
+  },
+  "categories": ["Other"],
+  "activationEvents": [],
+  "main": "./extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "opncreator.create",
+        "title": "OpnCreator: Create Operation"
+      }
+    ],
+    "menus": {
+      "explorer/context": [
+        {
+          "command": "opncreator.create",
+          "group": "navigation"
+        }
+      ]
+    }
+    ,
+    "keybindings": [
+      {
+        "command": "opncreator.create",
+        "key": "alt+shift+o",
+        "mac": "cmd+shift+o"
+      }
+    ]
+  }
+}

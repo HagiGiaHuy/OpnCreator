@@ -1,0 +1,32 @@
+# Dependencies
+node_modules/
+
+# VS Code extension build artifacts
+*.vsix
+out/
+dist/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment
+.env
+.env.*
+
+# OS files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store
+
+# Editor / IDE
+.vscode-test/
+*.swp
+*.swo
+
+# Temporary files
+*.tmp
+*.bak
