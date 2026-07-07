@@ -558,9 +558,11 @@ ${useOpnDlg ? `#include "${opnName}OpnDlg.h"` : ''}
 #include "LicenseFeatureDef.h"
 namespace
 {
-    const char* features[] = { JPT_BASE, 0};
+    // Unique symbol name so the anonymous-namespace array does not collide
+    // with a neighbouring file's when both land in the same JUMBO/unity TU.
+    const char* features__C${opnName}Opn[] = { JPT_BASE, 0};
 }
-IMPLEMENT_OPERATION_LICENSE(C${opnName}Opn, COpnBase, _T("${opnId || opnName.toUpperCase()}"), features )
+IMPLEMENT_OPERATION_LICENSE(C${opnName}Opn, COpnBase, _T("${opnId || opnName.toUpperCase()}"), features__C${opnName}Opn )
 
 C${opnName}Opn::C${opnName}Opn(void)
 {
@@ -982,10 +984,12 @@ protected:
 
 namespace
 {
-    const char* features[] = { JPT_BASE, 0};
+    // Unique symbol name so the anonymous-namespace array does not collide
+    // with a neighbouring file's when both land in the same JUMBO/unity TU.
+    const char* features__CCmd${opnName}[] = { JPT_BASE, 0};
 }
 
-IMPLEMENT_MACRO_CMD_LICENSE(CCmd${opnName}, ${opnName}, features)
+IMPLEMENT_MACRO_CMD_LICENSE(CCmd${opnName}, ${opnName}, features__CCmd${opnName})
 
 CCmd${opnName}::CCmd${opnName}( CDBSession *pDBSession, BOOL bTransaction )
     : CCmdBase( pDBSession, bTransaction )
