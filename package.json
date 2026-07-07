@@ -2,7 +2,7 @@
   "name": "opncreator",
   "displayName": "OpnCreator",
   "description": "Quickly add operation classes to the DCAD codebase",
-  "version": "1.0.4",
+  "version": "1.1.0",
   "publisher": "giahuy",
   "engines": {
     "vscode": "^1.74.0"
