@@ -1,2 +1,10 @@
 Prompt/**
 .vscodeignore
+.vscode/**
+.vscode-test/**
+.vscode-test.mjs
+test/**
+**/*.map
+.gitignore
+build.ps1
+install.ps1

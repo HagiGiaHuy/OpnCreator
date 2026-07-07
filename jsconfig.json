@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "Node16",
+    "lib": ["ES2020"],
+    "moduleResolution": "node16",
+    "checkJs": true,
+    "allowJs": true,
+    "strict": false,
+    "noImplicitAny": false,
+    "useUnknownInCatchVariables": false,
+    "types": ["node", "vscode"],
+    "skipLibCheck": true
+  },
+  "include": [
+    "extension.js",
+    "test/**/*.js"
+  ],
+  "exclude": [
+    "node_modules",
+    ".vscode-test"
+  ]
+}

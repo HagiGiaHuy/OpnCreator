@@ -105,6 +105,7 @@ class OpnCreatorPanel {
             useSelectionList,
             useCmd,
             addNewFiles,   // whether to write files to disk and git-stage them
+            encoding,      // 'utf8bom' (default) | 'utf8'
             project,
             taskId,
             author,
@@ -134,7 +135,7 @@ class OpnCreatorPanel {
                             errors.push(`File already exists: ${filePath}`);
                             continue;
                         }
-                        fs.writeFileSync(filePath, content, 'utf8');
+                        writeSourceFile(filePath, content, encoding);
                         createdFiles.push(filePath);
                     }
                 }
@@ -175,7 +176,7 @@ class OpnCreatorPanel {
                             errors.push(`File already exists: ${filePath}`);
                             continue;
                         }
-                        fs.writeFileSync(filePath, content, 'utf8');
+                        writeSourceFile(filePath, content, encoding);
                         createdFiles.push(filePath);
                     }
                 }
@@ -451,6 +452,24 @@ function insertIntoFilters(filePath, headers, sources) {
     content = insertBeforeLastClIncludeGroupEnd(content, headerLines);
     content = insertBeforeLastClCompileGroupEnd(content, sourceLines);
 
+    fs.writeFileSync(filePath, content, 'utf8');
+}
+
+// ─── Helper: write a generated source file with the chosen encoding ──────────
+
+/**
+ * Write a newly generated source file using the selected encoding.
+ * 'utf8bom' (default) prepends a UTF-8 BOM so Visual Studio reliably treats
+ * the file as UTF-8; 'utf8' writes plain UTF-8 with no BOM.
+ * @param {string} filePath
+ * @param {string} content
+ * @param {'utf8bom' | 'utf8'} [encoding]
+ */
+function writeSourceFile(filePath, content, encoding) {
+    if (encoding !== 'utf8' && !content.startsWith('\uFEFF')) {
+        // Default to UTF-8 with BOM.
+        content = '\uFEFF' + content;
+    }
     fs.writeFileSync(filePath, content, 'utf8');
 }
 
@@ -1138,7 +1157,8 @@ function getWebviewHtml() {
     gap: 6px;
     margin-bottom: 5px;
   }
-  .checkbox-row input[type="checkbox"] {
+  .checkbox-row input[type="checkbox"],
+  .checkbox-row input[type="radio"] {
     width: 14px;
     height: 14px;
     cursor: pointer;
@@ -1327,6 +1347,21 @@ function getWebviewHtml() {
     </fieldset>
   </div>
 
+  <!-- File Encoding -->
+  <div class="option-box">
+    <fieldset>
+      <legend>File Encoding</legend>
+      <div class="checkbox-row">
+        <input type="radio" name="encoding" id="encUtf8Bom" value="utf8bom" checked />
+        <label for="encUtf8Bom">UTF-8 with BOM</label>
+      </div>
+      <div class="checkbox-row">
+        <input type="radio" name="encoding" id="encUtf8" value="utf8" />
+        <label for="encUtf8">UTF-8</label>
+      </div>
+    </fieldset>
+  </div>
+
   <!-- Info & buttons -->
   <div class="info-box">
     <div class="info-row">
@@ -1360,8 +1395,18 @@ function getWebviewHtml() {
   const TEXT_FIELDS = ['projectOpn', 'projectCmd', 'opnId', 'opnName', 'project', 'taskId', 'author', 'date'];
   const CHECK_FIELDS = ['useOpn', 'useOpnDlg', 'useSelectionList', 'useCmd', 'addNewFiles'];
 
+  function getEncoding() {
+    const el = document.querySelector('input[name="encoding"]:checked');
+    return el ? el.value : 'utf8bom';
+  }
+
+  function setEncoding(value) {
+    const el = document.querySelector('input[name="encoding"][value="' + value + '"]');
+    if (el) el.checked = true;
+  }
+
   function saveState() {
-    const state = { text: {}, check: {} };
+    const state = { text: {}, check: {}, encoding: getEncoding() };
     TEXT_FIELDS.forEach(id => { const el = document.getElementById(id); if (el) state.text[id] = el.value; });
     CHECK_FIELDS.forEach(id => { const el = document.getElementById(id); if (el) state.check[id] = el.checked; });
     vscode.setState(state);
@@ -1378,6 +1423,7 @@ function getWebviewHtml() {
       const el = document.getElementById(id);
       if (el && state.check && typeof state.check[id] === 'boolean') el.checked = state.check[id];
     });
+    if (typeof state.encoding === 'string') setEncoding(state.encoding);
     return true;
   }
 
@@ -1388,6 +1434,9 @@ function getWebviewHtml() {
       el.addEventListener('input', saveState);
       el.addEventListener('change', saveState);
     }
+  });
+  document.querySelectorAll('input[name="encoding"]').forEach(el => {
+    el.addEventListener('change', saveState);
   });
 
   // ── receive init data from extension ──────────────────────────────────────
@@ -1517,6 +1566,7 @@ function getWebviewHtml() {
         useSelectionList:  document.getElementById('useSelectionList').checked,
         useCmd:            document.getElementById('useCmd').checked,
         addNewFiles:       document.getElementById('addNewFiles').checked,
+        encoding:          getEncoding(),
         project:           document.getElementById('project').value.trim(),
         taskId:            document.getElementById('taskId').value.trim(),
         author:            document.getElementById('author').value.trim(),
@@ -1533,4 +1583,14 @@ function getWebviewHtml() {
 </html>`;
 }
 
-module.exports = { activate, deactivate };
+module.exports = {
+    activate,
+    deactivate,
+    // Exported for unit testing.
+    writeSourceFile,
+    buildOpnFiles,
+    buildCmdFiles,
+    fileHeader,
+    insertIntoVcxproj,
+    insertIntoFilters,
+};

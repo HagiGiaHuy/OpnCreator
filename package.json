@@ -10,6 +10,17 @@
   "categories": ["Other"],
   "activationEvents": [],
   "main": "./extension.js",
+  "scripts": {
+    "test": "node ./test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.7",
+    "@types/node": "^18.19.0",
+    "@types/vscode": "^1.74.0",
+    "@vscode/test-electron": "^2.4.1",
+    "glob": "^10.4.5",
+    "mocha": "^10.7.3"
+  },
   "contributes": {
     "commands": [
       {
